@@ -18,6 +18,13 @@ yarn dev
 
 Remember to update `shopify.config.js` with your shop's domain and Storefront API token!
 
+### Vercel project
+
+Link this directory to a Vercel project and set the following configuration in Vercel Dashboard:
+
+- Output directory: set it to `dist/client`.
+- Build command: set it to `override: true` and leave it empty to skip cloud build.
+
 ## Building for production
 
 Build for production with the following command:
@@ -25,3 +32,5 @@ Build for production with the following command:
 ```bash
 yarn build
 ```
+
+This generates a Vercel Serverless Function that is consumed in `api/index.js`.

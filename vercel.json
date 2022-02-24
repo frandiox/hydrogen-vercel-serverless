@@ -1,0 +1,14 @@
+{
+  "public": true,
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "../dist/server"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    }
+  ]
+}

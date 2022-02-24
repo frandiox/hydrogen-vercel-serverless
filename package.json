@@ -11,7 +11,7 @@
     "lint:css": "stylelint ./src/**/*.{css,sass,scss}",
     "build": "yarn build:client && yarn build:server",
     "build:client": "vite build --outDir dist/client --manifest",
-    "build:server": "vite build --outDir dist/server --ssr @shopify/hydrogen/platforms/node",
+    "build:server": "vite build --outDir dist/server --ssr serverless-entry",
     "serve": "node --enable-source-maps dist/server",
     "preview": "npx @shopify/hydrogen-cli@latest preview"
   },
