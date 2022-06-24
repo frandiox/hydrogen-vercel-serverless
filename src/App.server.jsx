@@ -1,30 +1,50 @@
-import renderHydrogen from '@shopify/hydrogen/entry-server';
-import {DefaultRoutes, ShopifyProvider} from '@shopify/hydrogen';
 import {Suspense} from 'react';
-import shopifyConfig from '../shopify.config';
-import DefaultSeo from './components/DefaultSeo.server';
-import NotFound from './components/NotFound.server';
-import LoadingFallback from './components/LoadingFallback';
-import CartProvider from './components/CartProvider.client';
+import renderHydrogen from '@shopify/hydrogen/entry-server';
+import {
+  FileRoutes,
+  PerformanceMetrics,
+  PerformanceMetricsDebug,
+  Route,
+  Router,
+  ShopifyAnalytics,
+  ShopifyProvider,
+  LocalizationProvider,
+  CartProvider,
+} from '@shopify/hydrogen';
 
-function App({log, pages, ...serverState}) {
+import {HeaderFallback} from '~/components';
+import {DefaultSeo, NotFound} from '~/components/index.server';
+
+function App({routes, request}) {
+  const pathname = new URL(request.normalizedUrl).pathname;
+  const localeMatch = /^\/([a-z]{2})(\/|$)/i.exec(pathname);
+  const countryCode = localeMatch ? localeMatch[1] : undefined;
+
+  const isHome = pathname === `/${countryCode ? countryCode + '/' : ''}`;
+
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <ShopifyProvider shopifyConfig={shopifyConfig}>
-        <CartProvider>
-          <DefaultSeo />
-          <DefaultRoutes
-            pages={pages}
-            serverState={serverState}
-            log={log}
-            fallback={<NotFound />}
-          />
-        </CartProvider>
+    <Suspense fallback={<HeaderFallback isHome={isHome} />}>
+      <ShopifyProvider>
+        <LocalizationProvider countryCode={countryCode}>
+          <CartProvider countryCode={countryCode}>
+            <Suspense>
+              <DefaultSeo />
+            </Suspense>
+            <Router>
+              <FileRoutes
+                basePath={countryCode ? `/${countryCode}/` : undefined}
+                routes={routes}
+              />
+              <Route path="*" page={<NotFound />} />
+            </Router>
+          </CartProvider>
+          <PerformanceMetrics />
+          {import.meta.env.DEV && <PerformanceMetricsDebug />}
+          <ShopifyAnalytics />
+        </LocalizationProvider>
       </ShopifyProvider>
     </Suspense>
   );
 }
 
-const pages = import.meta.globEager('./pages/**/*.server.[jt](s|sx)');
-
-export default renderHydrogen(App, {pages});
+export default renderHydrogen(App);

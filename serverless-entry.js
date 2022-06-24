@@ -1,4 +1,4 @@
-import '@shopify/hydrogen/dist/node/utilities/web-api-polyfill';
+import '@shopify/hydrogen/web-polyfills';
 import handleRequest from './src/App.server';
 // @ts-ignore
 import indexTemplate from './dist/client/index.html?raw';
